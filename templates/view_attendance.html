@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Attendance Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="card shadow p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Attendance Log</h2>
+                
+                <form action="/clear_attendance" method="POST" onsubmit="return confirm('Are You Sure?');">
+                    <button type="submit" class="btn btn-danger">
+                        🗑️ Clear All Records
+                    </button>
+                </form>
+            </div>
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        {% if attendance|length > 0 %}
+                            {% for header in attendance[0] %}
+                                <th>{{ header }}</th>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in attendance[1:] %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if attendance|length <= 1 %}
+                <p class="text-center text-danger mt-3">No attendance records found.</p>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-secondary px-4">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
