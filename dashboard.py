@@ -8,7 +8,7 @@ from fpdf import FPDF
 
 # ---- PATH CONFIGURATION ----
 REGISTER_SCRIPT = "register_face.py"
-MARK_ATTENDANCE_SCRIPT = "mark.py" 
+MARK_ATTENDANCE_SCRIPT = "app.py" 
 ATTENDANCE_PATH = os.path.join("attendance", "attendance.csv")
 
 # UI COLOR PALETTE
