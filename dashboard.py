@@ -177,7 +177,6 @@ class ReportWindow(tk.Toplevel):
             pdf.cell(0, 10, "Attendance Report", ln=True, align="C")
             pdf.ln(8)
 
-            # Date/time stamp
             pdf.set_font("Helvetica", "", 10)
             pdf.cell(
                 0,
