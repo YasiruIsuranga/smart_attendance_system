@@ -23,7 +23,7 @@ COLORS = {
     "accent":   "#2563EB",
     "accent_h": "#1D4ED8",
     "success":  "#16A34A",
-    "success_h":"#15803D",
+    "success_h": "#15803D",
     "danger":   "#DC2626",
     "warn":     "#D97706",
 }
@@ -56,11 +56,13 @@ class FaceRegisterApp:
     # ---------------- UI ----------------
     def _setup_styles(self):
         style = ttk.Style()
-        style.theme_use("clam")  # enables custom colors reliably across platforms
+        # enables custom colors reliably across platforms
+        style.theme_use("clam")
 
         # Base frames
         style.configure("App.TFrame", background=COLORS["app_bg"])
-        style.configure("Card.TFrame", background=COLORS["card_bg"], relief="flat")
+        style.configure(
+            "Card.TFrame", background=COLORS["card_bg"], relief="flat")
 
         # Labels
         style.configure("Title.TLabel",
@@ -120,10 +122,14 @@ class FaceRegisterApp:
 
         # Status bar
         style.configure("StatusBar.TFrame", background=COLORS["card_bg"])
-        style.configure("StatusInfo.TLabel", background=COLORS["card_bg"], foreground=COLORS["muted"], font=("Segoe UI", 10))
-        style.configure("StatusOk.TLabel",   background=COLORS["card_bg"], foreground=COLORS["success"], font=("Segoe UI", 10, "bold"))
-        style.configure("StatusWarn.TLabel", background=COLORS["card_bg"], foreground=COLORS["warn"], font=("Segoe UI", 10, "bold"))
-        style.configure("StatusErr.TLabel",  background=COLORS["card_bg"], foreground=COLORS["danger"], font=("Segoe UI", 10, "bold"))
+        style.configure(
+            "StatusInfo.TLabel", background=COLORS["card_bg"], foreground=COLORS["muted"], font=("Segoe UI", 10))
+        style.configure("StatusOk.TLabel",   background=COLORS["card_bg"], foreground=COLORS["success"], font=(
+            "Segoe UI", 10, "bold"))
+        style.configure("StatusWarn.TLabel", background=COLORS["card_bg"], foreground=COLORS["warn"], font=(
+            "Segoe UI", 10, "bold"))
+        style.configure("StatusErr.TLabel",  background=COLORS["card_bg"], foreground=COLORS["danger"], font=(
+            "Segoe UI", 10, "bold"))
 
         style.configure("Thin.TSeparator", background=COLORS["border"])
 
@@ -137,7 +143,8 @@ class FaceRegisterApp:
         header.grid(row=0, column=0, sticky="ew", padx=18, pady=(16, 10))
         header.grid_columnconfigure(0, weight=1)
 
-        ttk.Label(header, text="Face Registration", style="Title.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(header, text="Face Registration", style="Title.TLabel").grid(
+            row=0, column=0, sticky="w")
         ttk.Label(header,
                   text="Register a user by capturing multiple angles and updating encodings.",
                   style="Subtitle.TLabel").grid(row=1, column=0, sticky="w", pady=(2, 0))
@@ -167,7 +174,8 @@ class FaceRegisterApp:
             highlightbackground=COLORS["border"],
             bd=0
         )
-        self.video_label.grid(row=1, column=0, sticky="nsew", padx=14, pady=(0, 14))
+        self.video_label.grid(
+            row=1, column=0, sticky="nsew", padx=14, pady=(0, 14))
 
         # Controls Card
         controls_card = ttk.Frame(content, style="Card.TFrame")
@@ -183,9 +191,11 @@ class FaceRegisterApp:
         form.grid(row=1, column=0, sticky="ew", padx=14, pady=(2, 8))
         form.grid_columnconfigure(0, weight=1)
 
-        ttk.Label(form, text="User Name / ID", style="CardText.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(form, text="User Name / ID",
+                  style="CardText.TLabel").grid(row=0, column=0, sticky="w")
         self.name_var = tk.StringVar()
-        self.name_entry = ttk.Entry(form, textvariable=self.name_var, style="Modern.TEntry")
+        self.name_entry = ttk.Entry(
+            form, textvariable=self.name_var, style="Modern.TEntry")
         self.name_entry.grid(row=1, column=0, sticky="ew", pady=(6, 0))
 
         # Buttons
@@ -223,7 +233,8 @@ class FaceRegisterApp:
         status_bar.grid(row=2, column=0, sticky="ew", padx=18, pady=(0, 14))
         status_bar.grid_columnconfigure(0, weight=1)
 
-        self.status_label = ttk.Label(status_bar, text="", style="StatusInfo.TLabel", anchor="w")
+        self.status_label = ttk.Label(
+            status_bar, text="", style="StatusInfo.TLabel", anchor="w")
         self.status_label.grid(row=0, column=0, sticky="ew", padx=12, pady=10)
 
     def set_status(self, text, kind="info"):
@@ -246,13 +257,15 @@ class FaceRegisterApp:
     def start_camera(self):
         raw_name = self.name_var.get().strip()
         if not raw_name:
-            messagebox.showwarning("Input required", "Please enter a user name/ID first.")
+            messagebox.showwarning(
+                "Input required", "Please enter a user name/ID first.")
             self.set_status("Please enter a user name/ID.", kind="warn")
             return
 
         name = self.sanitize_name(raw_name)
         if not name:
-            messagebox.showwarning("Invalid name", "Use letters/numbers (spaces allowed).")
+            messagebox.showwarning(
+                "Invalid name", "Use letters/numbers (spaces allowed).")
             self.set_status("Invalid user name/ID.", kind="warn")
             return
 
@@ -272,7 +285,8 @@ class FaceRegisterApp:
             return
 
         self.captured_count = 0
-        self.set_status("Camera started. Look at the camera and press 'Capture'.", kind="ok")
+        self.set_status(
+            "Camera started. Look at the camera and press 'Capture'.", kind="ok")
         self.update_frame()
 
     def update_frame(self):
@@ -306,7 +320,8 @@ class FaceRegisterApp:
             self.set_status("Start the camera first.", kind="warn")
             return
 
-        filename = os.path.join(self.user_folder, f"img_{self.captured_count}.jpg")
+        filename = os.path.join(
+            self.user_folder, f"img_{self.captured_count}.jpg")
         cv2.imwrite(filename, self.current_frame)
         self.captured_count += 1
         self.set_status(f"Captured {self.captured_count} image(s).", kind="ok")
@@ -329,14 +344,17 @@ class FaceRegisterApp:
         self.video_label.imgtk = None
 
         if self.captured_count == 0:
-            self.set_status("No images captured. Nothing to save.", kind="warn")
+            self.set_status(
+                "No images captured. Nothing to save.", kind="warn")
             return
 
         self.set_status("Generating encodings... Please wait.", kind="info")
         self.generate_encodings()
 
-        self.set_status(f"Done. Saved {self.captured_count} images. Encodings updated.", kind="ok")
-        messagebox.showinfo("Success", "User registered and encodings updated.")
+        self.set_status(
+            f"Done. Saved {self.captured_count} images. Encodings updated.", kind="ok")
+        messagebox.showinfo(
+            "Success", "User registered and encodings updated.")
 
     def generate_encodings(self):
         known_encodings = []
@@ -357,7 +375,8 @@ class FaceRegisterApp:
                     if len(face_locations) != 1:
                         continue
 
-                    encoding = face_recognition.face_encodings(image, face_locations)[0]
+                    encoding = face_recognition.face_encodings(
+                        image, face_locations)[0]
                     known_encodings.append(encoding)
                     known_names.append(user)
                 except Exception as e:
@@ -376,5 +395,6 @@ class FaceRegisterApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.state("zoomed")
     app = FaceRegisterApp(root)
     root.mainloop()

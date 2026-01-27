@@ -3,3 +3,4 @@ face-recognition
 flask
 numpy
 Pillow
+fpdf
