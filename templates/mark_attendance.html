@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="si">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mark Attendance</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #1a1a1a; }
-        #success-msg { display: none; }
+        body {
+            background-color: #1a1a1a;
+        }
+
+        #success-msg {
+            display: none;
+        }
+
         .camera-container {
             border: 6px solid #28a745;
             border-radius: 20px;
@@ -15,6 +22,7 @@
             background-color: #000;
             box-shadow: 0 0 30px rgba(40, 167, 69, 0.3);
         }
+
         .scan-line {
             width: 100%;
             height: 3px;
@@ -24,19 +32,25 @@
             z-index: 10;
             animation: moveScan 3s infinite linear;
         }
+
         @keyframes moveScan {
-            0% { top: 0; }
-            100% { top: 100%; }
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
         }
     </style>
     <script>
-        // තත්පරයෙන් තත්පරය පද්ධතියේ status එක පරීක්ෂා කිරීම
-        let checkInterval = setInterval(function() {
+
+        let checkInterval = setInterval(function () {
             fetch('/check_status')
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "success") {
-                        clearInterval(checkInterval); 
+                        clearInterval(checkInterval);
                         // කැමරාව වසා දමා සාර්ථක පණිවිඩය පෙන්වන්න
                         document.getElementById('camera-section').style.display = 'none';
                         document.getElementById('success-msg').style.display = 'block';
@@ -47,29 +61,27 @@
 
         // කැමරාව Load වීමට අපහසු නම් Refresh කිරීමේ පහසුකම
         function handleImgError(img) {
-            setTimeout(function() {
+            setTimeout(function () {
                 img.src = "{{ url_for('video_feed') }}?" + new Date().getTime();
             }, 1000);
         }
     </script>
 </head>
+
 <body class="text-white text-center">
 
     <div class="container mt-5">
         <div id="camera-section">
             <h2 class="text-success fw-bold mb-4">📸 Scanning Face...</h2>
-            
+
             <div class="row justify-content-center">
                 <div class="col-md-8 position-relative p-0 camera-container">
                     <div class="scan-line"></div>
-                    <img id="video-feed" 
-                         src="{{ url_for('video_feed') }}" 
-                         class="w-100" 
-                         onerror="handleImgError(this)"
-                         alt="Live Camera Feed">
+                    <img id="video-feed" src="{{ url_for('video_feed') }}" class="w-100" onerror="handleImgError(this)"
+                        alt="Live Camera Feed">
                 </div>
             </div>
-            
+
             <div class="mt-4">
                 <p class="lead">Show your Face.</p>
                 <a href="/" class="btn btn-outline-danger px-4 shadow-sm">Cancel Scan</a>
@@ -82,7 +94,7 @@
                     <div class="display-1 text-success">✅</div>
                 </div>
                 <h2 class="fw-bold text-success">Attendance Marked!</h2>
-                
+
                 <div class="mt-4 d-grid gap-2">
                     <a href="/view_attendance" class="btn btn-success btn-lg rounded-pill shadow">OK - Check Records</a>
                     <a href="/" class="btn btn-light text-muted btn-sm mt-2">Back to Dashboard</a>
@@ -92,4 +104,5 @@
     </div>
 
 </body>
+
 </html>
