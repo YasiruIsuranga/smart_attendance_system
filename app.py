@@ -9,11 +9,11 @@ from PIL import Image, ImageTk, ImageOps
 from datetime import datetime
 import face_recognition
 
-# ---- PATH CONFIG ----
+
 ENCODINGS_PATH = os.path.join("encodings", "face_encodings.pkl")
 ATTENDANCE_PATH = os.path.join("attendance", "attendance.csv")
 
-# ---- UI COLORS ----
+
 COLORS = {
     "app_bg":   "#F3F6FF",
     "card_bg":  "#FFFFFF",
@@ -36,10 +36,8 @@ class AttendanceApp:
         self.pending_name = None
         self.pending_start = None
 
-        # Ensure directory exists
         os.makedirs("attendance", exist_ok=True)
 
-        # Load known faces from pickle file
         self.known_data = self.load_encodings()
 
         self._setup_styles()
@@ -150,17 +148,16 @@ class AttendanceApp:
         date_str = now.strftime("%Y-%m-%d")
         time_str = now.strftime("%H:%M:%S")
 
-        # Create file with header if it doesn't exist
         if not os.path.exists(ATTENDANCE_PATH):
             with open(ATTENDANCE_PATH, "w") as f:
                 f.write("Name,Date,Time\n")
 
-        # ---- DAILY DUPLICATE CHECK START ----
+        # DAILY DUPLICATE CHECK START
         already_marked = False
         with open(ATTENDANCE_PATH, "r") as f:
             lines = f.readlines()
             for line in lines:
-                # Check if both name and today's date exist in the same line
+
                 if name in line and date_str in line:
                     already_marked = True
                     break
@@ -170,9 +167,8 @@ class AttendanceApp:
             messagebox.showwarning(
                 "Already Marked", f"Attendance already marked for {name} today!")
             return
-        # ---- DAILY DUPLICATE CHECK END ----
+        # DAILY DUPLICATE CHECK END
 
-        # Record new attendance
         with open(ATTENDANCE_PATH, "a") as f:
             f.write(f"{name},{date_str},{time_str}\n")
 

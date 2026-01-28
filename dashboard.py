@@ -8,7 +8,6 @@ from fpdf import FPDF
 from PIL import Image, ImageTk, ImageOps
 import shutil
 
-# ---- PATH CONFIGURATION ----
 REGISTER_SCRIPT = "register_face.py"
 MARK_ATTENDANCE_SCRIPT = "app.py"
 ATTENDANCE_PATH = os.path.join("attendance", "attendance.csv")
@@ -25,7 +24,7 @@ COLORS = {
     "border": "#E2E8F0"
 }
 
-# ---------------- REPORT WINDOW ----------------
+# REPORT WINDOW
 
 
 class ReportWindow(tk.Toplevel):
@@ -38,7 +37,7 @@ class ReportWindow(tk.Toplevel):
         # Track current view: "all" or "today"
         self.current_mode = "all"
 
-        # ---- Toolbar ----
+        # Toolbar
         toolbar = tk.Frame(self, bg=COLORS["card"], pady=10)
         toolbar.pack(fill="x")
 
@@ -75,7 +74,7 @@ class ReportWindow(tk.Toplevel):
             font=("Segoe UI", 9, "bold")
         ).pack(side="right", padx=20)
 
-        # ---- Treeview ----
+        # Treeview
         style = ttk.Style()
         style.configure("Treeview", rowheight=30)
 
@@ -89,33 +88,33 @@ class ReportWindow(tk.Toplevel):
         self.tree.heading("Time", text="Check-in Time")
         self.tree.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # First load + auto-refresh
+        #  auto-refresh
         self.load_all()
         self.after(2000, self.auto_refresh)   # refresh every 2 seconds
 
-    # ---------- Data helpers ----------
+    # Data helpers
 
     def get_data(self):
-        """Read all attendance rows from the CSV."""
+
         rows = []
         if not os.path.exists(ATTENDANCE_PATH):
             return rows
 
         with open(ATTENDANCE_PATH, "r", newline="") as f:
             reader = csv.reader(f)
-            header = next(reader, None)  # skip header
+            header = next(reader, None)
             for row in reader:
                 if len(row) >= 3:
                     rows.append(row)
         return rows
 
     def load_all(self):
-        """Show all attendance records."""
+
         self.current_mode = "all"
         self.update_table(self.get_data())
 
     def load_today(self):
-        """Show only today's attendance records."""
+
         self.current_mode = "today"
         today = datetime.now().strftime("%Y-%m-%d")
         data = [row for row in self.get_data() if len(row) >=
@@ -123,30 +122,27 @@ class ReportWindow(tk.Toplevel):
         self.update_table(data)
 
     def refresh_current(self):
-        """Reload table based on current mode (all or today)."""
+
         if self.current_mode == "today":
             self.load_today()
         else:
             self.load_all()
 
     def auto_refresh(self):
-        """Periodic refresh to reflect new attendance marks."""
+
         self.refresh_current()
-        self.after(2000, self.auto_refresh)  # call again in 2 seconds
+        self.after(2000, self.auto_refresh)
 
     def update_table(self, rows):
-        """Clear and refill the Treeview."""
+
         self.tree.delete(*self.tree.get_children())
         for r in rows:
             self.tree.insert("", "end", values=r)
 
-    # ---------- PDF export ----------
+    # PDF export
 
     def export_pdf(self):
-        """
-        Export the currently selected view (All or Today) to a PDF.
-        Reads directly from attendance.csv to avoid Treeview item-ID issues.
-        """
+
         all_rows = self.get_data()
 
         if self.current_mode == "today":
@@ -165,7 +161,7 @@ class ReportWindow(tk.Toplevel):
             title="Save attendance report as PDF"
         )
         if not path:
-            return  # user cancelled
+            return
 
         try:
             pdf = FPDF()
@@ -210,7 +206,7 @@ class ReportWindow(tk.Toplevel):
             messagebox.showerror(
                 "Error", f"Failed to generate PDF:\n{repr(e)}")
 
-# ----------REGISTERD DATA WINDOW ------------
+# REGISTERD DATA WINDOW
 
 
 class RegisteredDataWindow(tk.Toplevel):
@@ -225,7 +221,7 @@ class RegisteredDataWindow(tk.Toplevel):
         self.current_user = None
         self.image_paths = []
         self.current_index = 0
-        self.current_photo = None  # keep reference to avoid GC
+        self.current_photo = None
 
         # Layout
         main = tk.Frame(self, bg=COLORS["bg"])
@@ -312,7 +308,7 @@ class RegisteredDataWindow(tk.Toplevel):
         ).grid(row=0, column=2, padx=15)
 
     def get_users(self):
-        """Return list of user folders inside dataset/faces."""
+
         if not os.path.exists(DATASET_DIR):
             return []
         return sorted(
@@ -352,7 +348,7 @@ class RegisteredDataWindow(tk.Toplevel):
         path = self.image_paths[self.current_index]
         try:
             img = Image.open(path)
-            # Fit into label size (fallback size if not yet measured)
+
             w = self.photo_label.winfo_width() or 600
             h = self.photo_label.winfo_height() or 400
             img = ImageOps.contain(img, (w, h))
@@ -370,7 +366,7 @@ class RegisteredDataWindow(tk.Toplevel):
         if self.current_index < len(self.image_paths) - 1:
             self.current_index += 1
         else:
-            self.current_index = 0  # wrap around
+            self.current_index = 0
         self.show_current_image()
 
     def show_prev(self):
@@ -379,7 +375,7 @@ class RegisteredDataWindow(tk.Toplevel):
         if self.current_index > 0:
             self.current_index -= 1
         else:
-            self.current_index = len(self.image_paths) - 1  # wrap
+            self.current_index = len(self.image_paths) - 1
         self.show_current_image()
 
     def download_photos(self):
@@ -426,7 +422,7 @@ class RegisteredDataWindow(tk.Toplevel):
                 f"An error occurred while copying photos:\n{e}"
             )
 
-# ---------------- MAIN DASHBOARD ----------------
+# MAIN DASHBOARD
 
 
 class MainDashboard:
@@ -510,7 +506,6 @@ class MainDashboard:
             fg="#64748B"
         ).pack(anchor="w")
 
-        # Store the label on self so we can update it later
         self.count_label = tk.Label(
             card,
             text=f"{count} Person Present",
@@ -546,9 +541,9 @@ class MainDashboard:
 
     def run_attendance(self):
         if os.path.exists(MARK_ATTENDANCE_SCRIPT):
-            # Wait until app.py finishes (user closes attendance window)
+
             subprocess.call(["python", MARK_ATTENDANCE_SCRIPT])
-            # Then recompute today's count
+
             self.update_today_count()
         else:
             messagebox.showerror(
