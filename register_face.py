@@ -8,12 +8,11 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageOps
 import face_recognition
 
-# ---- PATH CONFIG ----
+
 DATASET_DIR = os.path.join("dataset", "faces")
 ENCODINGS_PATH = os.path.join("encodings", "face_encodings.pkl")
 
 
-# ---- UI COLORS (modern light theme) ----
 COLORS = {
     "app_bg":   "#F3F6FF",
     "card_bg":  "#FFFFFF",
@@ -43,7 +42,7 @@ class FaceRegisterApp:
         self._setup_styles()
         self._build_layout()
 
-        # ---- Internal state ----
+        #  Internal state
         self.cap = None
         self.current_frame = None
         self.captured_count = 0
@@ -53,10 +52,9 @@ class FaceRegisterApp:
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.set_status("Idle", kind="info")
 
-    # ---------------- UI ----------------
     def _setup_styles(self):
         style = ttk.Style()
-        # enables custom colors reliably across platforms
+
         style.theme_use("clam")
 
         # Base frames
@@ -247,7 +245,6 @@ class FaceRegisterApp:
         self.status_label.configure(text=f"Status: {text}", style=style)
         self.root.update_idletasks()
 
-    # ---------------- Logic ----------------
     def sanitize_name(self, name: str) -> str:
         name = name.strip()
         name = re.sub(r"\s+", "_", name)
@@ -272,7 +269,6 @@ class FaceRegisterApp:
         self.user_folder = os.path.join(DATASET_DIR, name)
         os.makedirs(self.user_folder, exist_ok=True)
 
-        # If camera already open, release and reopen cleanly
         if self.cap is not None:
             self.cap.release()
             self.cap = None
@@ -303,7 +299,6 @@ class FaceRegisterApp:
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(frame_rgb)
 
-        # Fit image into the available label size
         w = max(1, self.video_label.winfo_width())
         h = max(1, self.video_label.winfo_height())
         img = ImageOps.contain(img, (w, h))
@@ -371,7 +366,6 @@ class FaceRegisterApp:
                     image = face_recognition.load_image_file(img_path)
                     face_locations = face_recognition.face_locations(image)
 
-                    # Only use images with exactly one face
                     if len(face_locations) != 1:
                         continue
 
